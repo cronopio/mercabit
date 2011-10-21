@@ -49,6 +49,8 @@
     "expresso": "0.8.x",
     "should": "0.2.x"
   },
-  "scripts": { "install" : "bash ./bin/install.sh" },
-  "bin": { "calipso": "./bin/calipso" }
+  "scripts": { "install" : "bash ./bin/install.sh",
+               "start": "app.js" },
+  "bin": { "calipso": "./bin/calipso" },
+  "subdomain": "mercabits"
 }
