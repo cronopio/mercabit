@@ -1,0 +1,31 @@
+
+Command format:
+
+calipso                            : Show this help file.
+
+calipso site <name>                : Create site in folder.
+calipso install                    : Ensure valid installation.
+
+calipso cluster                    : Run as cluster.
+calipso server                     : Run as a single server.
+
+calipso modules list               : List installed modules
+calipso modules reinstall *mod     : Reinstall module dependencies
+calipso modules uninstall *mod     : Remove module (delete from disk)
+calipso modules check              : Check installation of all modules.
+calipso modules enable *mod        : Enable module.
+calipso modules disable *mod       : Disable module.
+calipso modules download *url      : Download (url: http://, gh: cliftonc/calipso-elastic, repo: elastic).
+
+calipso themes list                : List installed themes.
+calipso themes uninstall *theme    : Remove theme (delete from disk)
+calipso themes download *url       : Download (url: http://, gh: cliftonc/calipso-site-theme, repo: calipso-site).
+
+calipso test                       : Run all tests.
+
+calipso script help *<name>        : This help script, optional script name.
+calipso script <name> *params      : Run a script with <name>, with params.
+
+Available scripts:
+<? if (scripts.length) { scripts.forEach(function(name){ ?>
+<?= name ?><? }) } ?>
