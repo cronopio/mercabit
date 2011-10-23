@@ -29,6 +29,7 @@ function route(req, res, module, app, next) {
   if (req.session && req.session.user) {
     res.menu.primary.addMenuItem({name:'Comprar Bitcoins',path:'orderbook/compra',url:'/orderbook/compra',description:'Crear una Orden de Compra',security:[]});
     res.menu.primary.addMenuItem({name:'Vender Bitcoins',path:'orderbook/venta',url:'/orderbook/venta',description:'Crear una Orden de Venta',security:[]});
+    res.menu.primary.addMenuItem({name:'Mis Ordenes', path:'misordenes', url:'/misordenes', description:'Tus Ordenes Activas', security:[]});
   }
   
   // Router
@@ -59,13 +60,20 @@ function init(module, app, next) {
       // Agrego la ruta para procesar el formulario y guardar la orden.
       module.router.addRoute('POST /orderbook/:tipo', ordenSave, null, this.parallel());
       
+      // Agrego la ruta para mis ordenes
+      module.router.addRoute('GET /misordenes', misOrdenes, { 
+        template: 'ordenList',
+        block: 'content' 
+      }, this.parallel());
+      
     }, function done() {
       // Creo el modelo de Orden
       var Orden = new calipso.lib.mongoose.Schema({
         tipo:{type: String, required: true},
         volumen: Number,
         precio: Number,
-        owner: String
+        owner: String,
+        created_at: { type: Date, default: Date.now }
       });
       calipso.lib.mongoose.model('Orden', Orden);
       
@@ -192,11 +200,30 @@ function ordenSave(req, res, template, block, next) {
             // TODO: como un post evento debe estar la revision por una orden que llene esta
             if(!res.noRedirect) {
               req.flash('info',req.t('Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'));
-              res.redirect('/misordenes/' + req.session.user.username);
+              res.redirect('/misordenes');
             }
           }
         });
       }
+    });
+  }
+};
+
+/*
+ * Funcion para mostrarle las ordenes al usuario logueado
+ */
+function misOrdenes(req, res, template, block, next) {
+  var Orden = calipso.lib.mongoose.model('Orden');
+  
+  if (req.session && req.session.user) {
+    Orden.find({owner:req.session.user.id}, function(err, ordenes) {
+      if (err) {
+        req.flash('error',req.t('No se pudo consultar sus ordenes porque: {msg}.',{msg:err.message}));
+        if(res.statusCode != 302 && !res.noRedirect) {
+          res.redirect('back');
+        }
+      }
+      calipso.theme.renderItem(req, res, template, block, { ordenes:ordenes },next);
     });
   }
 };

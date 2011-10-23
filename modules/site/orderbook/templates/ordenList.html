@@ -1,0 +1,23 @@
+<div id="mis-ordenes">
+  <h2>Ordenes Activas</h2>
+  <table>
+    <tbody>
+      <tr>
+        <th>Fecha Creacion</th>
+        <th>Tipo</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+      <% for (var o in ordenes) { %>
+        <tr>
+          <td><%= ordenes[o].created_at.toString() %></td>
+          <td><%= ordenes[o].tipo %></td>
+          <td><%= ordenes[o].precio %></td>
+          <td><%= ordenes[o].volumen %></td>
+          <td><%= ordenes[o].precio * ordenes[o].volumen %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
