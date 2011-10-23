@@ -6,7 +6,7 @@ Probando por ahora calip.so
 
 ## Order Book
 
-El order book es el registro completo de todas las ordenes de compra y venta, de cada usuario.
+El order book es el registro completo de todas las ordenes de compra y venta, de todos los usuarios.
 
 ### Orden
 
@@ -15,8 +15,12 @@ Una orden tiene los siguientes atributos
  * tipo (compra o venta)
  * volumen
  * precio
+ * Dueño (usuario creador de la orden)
 
 Cada uno de estos items ingresado por el usuario.
+
+Para crear una orden el usuario debe contar con saldo suficiente para cubrir la orden en su balance. 
+En caso de ser una orden de compra, poseer los pesos colombianos necesarios y en caso de que sea una orden de venta pues tener los bitcoins necesarios.
 
 Cuando una orden es creada, es necesario revisar si ya existe alguna orden de **tipo contrario** por el precio.
 Si existe tal orden entonces se debe revisar si el volumen de la orden encontrada es igual o mayor a la orden creada. De ser asi entonces
