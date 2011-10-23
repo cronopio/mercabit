@@ -1,0 +1,11 @@
+{
+  "name": "orderbook",
+  "description": "Orderbook for bitcoins market",
+  "version": "0.0.1",
+  "homepage": "http://mercabits.com",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cronopio/mercabit.git"
+  },
+  "author": "Daniel Aristizabal <aristizabal.daniel@gmail.com>"  
+}
