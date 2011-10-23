@@ -1,0 +1,38 @@
+<div id="ordenes-compra" class="order-book" style="width:45%;float:left;">
+  <h3>Ordenes de Compra</h3>
+  <table class="orderbook-table">
+    <tbody>
+      <tr>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+      <% for (var c in compras) { %>
+        <tr>
+          <td><%= compras[c].precio %></td>
+          <td><%= compras[c].volumen %></td>
+          <td><%= compras[c].precio * compras[c].volumen %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<div id="ordenes-venta" class="order-book" style="width:45%;float:right;">
+  <h3>Ordenes de Venta</h3>
+  <table class="orderbook-table">
+    <tbody>
+      <tr>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+      <% for (var v in ventas) { %>
+        <tr>
+          <td><%= ventas[v].precio %></td>
+          <td><%= ventas[v].volumen %></td>
+          <td><%= ventas[v].precio * ventas[v].volumen %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

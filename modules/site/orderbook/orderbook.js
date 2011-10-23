@@ -48,6 +48,12 @@ function init(module, app, next) {
         block:'side.orderbook'
       }, this.parallel());
       
+      // Agrego la ruta para ver el orderbook completo
+      module.router.addRoute('GET /orderbook', orderBook, {
+        template:'orderbook', 
+        block:'content' 
+      }, this.parallel());
+      
       // Agrego la ruta para mostrar el formulario al crear una orden de compra
       module.router.addRoute('GET /orderbook/:tipo', ordenForm, { block:'content' }, this.parallel());
       // Agrego la ruta para procesar el formulario y guardar la orden.
@@ -101,6 +107,36 @@ function allPages(req, res, template, block, next) {
     // Usuario no logueado
     next();
   }
+};
+
+/**
+ * Funcion para mostrar el order book con todas la ordenes
+ */
+function orderBook(req, res, template, block, next) {
+  var Orden = calipso.lib.mongoose.model('Orden'),
+      format = req.moduleParams.format ? req.moduleParams.format : 'html';
+  
+  calipso.lib.step(
+    function getOrdenes() {
+      Orden.find({tipo:'compra'}, this.parallel());
+      Orden.find({tipo:'venta'}, this.parallel());
+    },
+    function done(err, compras, ventas) {
+      if (format === 'html') {
+        calipso.theme.renderItem(req, res, template, block, {
+          compras:compras,
+          ventas:ventas
+        },next);
+      }
+      
+      if (format === "json") {
+        res.format = format;
+        res.send({compras:compras,ventas:ventas});
+        next();
+      }
+      
+    }
+  );
 };
 
 /*
