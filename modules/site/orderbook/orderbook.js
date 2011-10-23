@@ -27,8 +27,8 @@ function route(req, res, module, app, next) {
   
   // Agrego los enlaces para que el usuario cree ordenes
   if (req.session && req.session.user) {
-    res.menu.primary.addMenuItem({name:'Crear Orden de Compra',path:'orderbook/compra',url:'/orderbook/compra',description:'Crear una Orden de Compra',security:[]});
-    res.menu.primary.addMenuItem({name:'Crear Orden de Venta',path:'orderbook/venta',url:'/orderbook/venta',description:'Crear una Orden de Venta',security:[]});
+    res.menu.primary.addMenuItem({name:'Comprar Bitcoins',path:'orderbook/compra',url:'/orderbook/compra',description:'Crear una Orden de Compra',security:[]});
+    res.menu.primary.addMenuItem({name:'Vender Bitcoins',path:'orderbook/venta',url:'/orderbook/venta',description:'Crear una Orden de Venta',security:[]});
   }
   
   // Router
