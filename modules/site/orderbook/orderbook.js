@@ -156,7 +156,7 @@ function ordenSave(req, res, template, block, next) {
             // TODO: como un post evento debe estar la revision por una orden que llene esta
             if(!res.noRedirect) {
               req.flash('info',req.t('Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'));
-              res.redirect('/misordenes/' + u.username);
+              res.redirect('/misordenes/' + req.session.user.username);
             }
           }
         });
