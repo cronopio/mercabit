@@ -49,7 +49,9 @@ function init(module, app, next) {
       }, this.parallel());
       
       // Agrego la ruta para mostrar el formulario al crear una orden de compra
-      module.router.addRoute('GET /orderbook/compra', ordenCompraForm, { block:'content' }, this.parallel());
+      module.router.addRoute('GET /orderbook/:tipo', ordenForm, { block:'content' }, this.parallel());
+      // Agrego la ruta para procesar el formulario y guardar la orden.
+      module.router.addRoute('POST /orderbook/:tipo', ordenSave, null, this.parallel());
       
     }, function done() {
       // Creo el modelo de Orden
@@ -104,13 +106,14 @@ function allPages(req, res, template, block, next) {
 /*
  * Funcion para mostrar el formulario de creacion de orden de compra.
  */
-function ordenCompraForm(req, res, template, block, next) {
+function ordenForm(req, res, template, block, next) {
   if (req.session && req.session.user) {
+    var tipo = req.moduleParams.tipo;
     var orderForm = {
-      id:'FORM', title:req.t('Crear Nueva Orden'), type:'form', method:'POST', action:'/orderbook/compra',
+      id:'FORM', title:req.t('Crear Nueva Orden'), type:'form', method:'POST', action:'/orderbook/' + tipo,
       sections: [{
         id:'form-section-core',
-        label:'Compra',
+        label:tipo,
         fields: [
           {label:'Cantidad', name:'orden[volumen]', type:'text'},
           {label:'Precio', name:'orden[precio]', type:'text'}
@@ -123,6 +126,41 @@ function ordenCompraForm(req, res, template, block, next) {
     
     calipso.form.render(orderForm, null, req, function(form) {
       calipso.theme.renderItem(req, res, form, block, {}, next);
+    });
+  }
+};
+
+/*
+ * Funcion para guardar la nueva orden de compra
+ */
+function ordenSave(req, res, template, block, next) {
+  if (req.session && req.session.user) {
+    calipso.form.process(req, function(form) {
+      if (form) {
+        var Orden = calipso.lib.mongoose.model('Orden'),
+            uOrden = new Orden(form.orden);
+        
+        uOrden.owner = req.session.user.id;
+        uOrden.tipo = req.moduleParams.tipo;
+        
+        // TODO: Agregar las emisiones de los pre eventos.
+        
+        uOrden.save(function(err) {
+          if(err) {
+            req.flash('error',req.t('No se pudo crear la orden porque: {msg}.',{msg:err.message}));
+            if(res.statusCode != 302 && !res.noRedirect) {
+              res.redirect('back');
+            }
+          } else {
+            // TODO: Agregar las emisiones a los post eventos.
+            // TODO: como un post evento debe estar la revision por una orden que llene esta
+            if(!res.noRedirect) {
+              req.flash('info',req.t('Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'));
+              res.redirect('/misordenes/' + u.username);
+            }
+          }
+        });
+      }
     });
   }
 };
