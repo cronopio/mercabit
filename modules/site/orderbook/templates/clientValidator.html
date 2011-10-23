@@ -1,0 +1,18 @@
+<% if (balance) { %>
+  <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('required');
+      $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('number');
+      
+      $('#FORM-Orden').validate({
+        defaults: {
+          messages: {
+            number: 'Por favor ingrese un número válido'
+          }
+        }
+      });
+    });
+    
+  </script>
+<% } %>

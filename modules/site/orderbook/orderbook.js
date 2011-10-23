@@ -57,6 +57,10 @@ function init(module, app, next) {
       
       // Agrego la ruta para mostrar el formulario al crear una orden de compra
       module.router.addRoute('GET /orderbook/:tipo', ordenForm, { block:'content' }, this.parallel());
+      module.router.addRoute('GET /orderbook/:tipo', clientValidator, { 
+        block:'scripts.validator',
+        template:'clientValidator' 
+      }, this.parallel());
       // Agrego la ruta para procesar el formulario y guardar la orden.
       module.router.addRoute('POST /orderbook/:tipo', ordenSave, null, this.parallel());
       
@@ -154,13 +158,13 @@ function ordenForm(req, res, template, block, next) {
   if (req.session && req.session.user) {
     var tipo = req.moduleParams.tipo;
     var orderForm = {
-      id:'FORM', title:req.t('Crear Nueva Orden'), type:'form', method:'POST', action:'/orderbook/' + tipo,
+      id:'FORM-Orden', title:req.t('Crear Nueva Orden'), type:'form', method:'POST', action:'/orderbook/' + tipo,
       sections: [{
         id:'form-section-core',
         label:tipo,
         fields: [
-          {label:'Cantidad', name:'orden[volumen]', type:'text'},
-          {label:'Precio', name:'orden[precio]', type:'text'}
+          {label:'Cantidad', name:'orden[volumen]', type:'text', class:'required number'},
+          {label:'Precio', name:'orden[precio]', type:'text', class:'required number'}
         ]
       }],
       buttons: [
@@ -227,3 +231,21 @@ function misOrdenes(req, res, template, block, next) {
     });
   }
 };
+
+/*
+ * Funcion para agregar el JS para validar en client side 
+ * la creacion de una orden con balance suficiente.
+ */
+function clientValidator(req, res, template, block, next) {
+  var User = calipso.lib.mongoose.model('User');
+  
+  User.findOne({username:req.session.user.username}, function(err, user) {
+    var u = user.toObject();
+    calipso.theme.renderItem(req, res, template, block, {
+      balance: {
+        cop: u.balanceCop,
+        btc: u.balanceBtc
+      }
+    }, next);
+  });
+}
