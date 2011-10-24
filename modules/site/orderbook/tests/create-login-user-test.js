@@ -8,7 +8,7 @@ var Feature = require('vows-bdd').Feature,
     zombie = require('zombie');
      
 
-Feature('Creando un usuario', module)
+Feature('Creando un usuario')
   .scenario('Usando el registro')
   .given('El servidor esta corriendo', function(){
     var self = this;
@@ -77,6 +77,43 @@ Feature('Creando un usuario', module)
   .then('Veo el mensaje de confirmacion', function(e, b, s) { 
     assert.equal(b.text('#messages ul.info li').trim(), 'Profile created, you can now login using this account.');
     
+  })
+  .complete()
+  .finish(module);
+  
+Feature('Logueandose')
+  .scenario('Inicio')
+  .when('Visito el Homepage', function() {
+    zombie.visit('http://localhost:3000/', this.callback);
+  })
+  .then('Veo el enlace de login', function(e, b, s) {
+    assert.equal(b.text('a#userFormToggleTrigger'), 'Log In');
+  })
+  .and('No veo el cuadro de login', function(e, b, s) {
+    assert.equal(b.querySelector('#user-login').style.display, 'none');
+  })
+  .when('Click en login', function(b, s) {
+    b.clickLink('Log In', this.callback)
+  })
+  .then('Veo el cuadro de login', function(e, b, s) {
+    assert.equal(b.querySelector('#user-login').style.display, '');
+  })
+  .when('Lleno el formulario de login', function(b, s) {
+    b.fill("user[username]", "probando")
+      .fill("user[password]", "probando")
+      .pressButton("Login", this.callback);
+  })
+  .then('Veo menu de usuario', function(e, b, s) {
+    var userLogin = b.querySelector('#user-login'),
+        enlaces = userLogin.querySelectorAll('a');
+        
+    // Deben aparecer 2 enlaces
+    assert.equal(enlaces.length, 2);
+        
+    // El primer enlace debe decir el nombre de usuario
+    assert.equal(enlaces[0].innerHTML, "probando");
+    // El segundo enlace debe decir logout
+    assert.equal(enlaces[1].innerHTML, "Logout");
   })
   .complete()
   .finish(module);
