@@ -6,10 +6,19 @@
       $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('number');
       
       $('#FORM-Orden').validate({
-        defaults: {
-          messages: {
-            number: 'Por favor ingrese un número válido'
+        messages: {
+          "orden[volumen]": {
+            number: 'Por favor ingrese una cantidad válida',
+            required: 'La cantidad es necesaria'
+          },
+          "orden[precio]": {
+            numbre: 'Por favor ingrese un precio válido',
+            required: 'El precio es necesario'
           }
+        },
+        highlight: function(el, eClass, vClass) {
+          // Defino esta funcion para evitar
+          // el highlight del input.
         }
       });
     });
