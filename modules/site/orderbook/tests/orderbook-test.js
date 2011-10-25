@@ -15,6 +15,21 @@ var loguear = function(f) {
     });
   });
 };
+
+var buscarMisOrdenes = function(browser, tipo, precio, cant, total) {
+  var filas = browser.querySelectorAll('tr', 
+    browser.querySelector('#mis-ordenes table')).toArray();
+    
+  for (var f in filas) {
+    var columnas = filas[f].childNodes.toArray();
+    if (columnas[3].innerHTML === tipo && 
+      columnas[5].innerHTML === precio &&
+      columnas[7].innerHTML === cant && 
+      columnas[9].innerHTML === total) {
+      return filas[f];
+    }
+  }
+}
     
 Feature('Revicion Inicial')
   .scenario('Index')
@@ -109,6 +124,50 @@ Feature('Orden de Venta').scenario('')
     assert.equal(b.text('#messages ul.info li').trim(), 
       'Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'
     );
+  })
+  .complete()
+  .finish(module);
+  
+Feature('Borrar Orden').scenario('')
+  .given('Logueado', function() {
+    loguear(this);
+  })
+  .when('crea una orden', function(b, s) {
+    var self = this;
+    b.location = 'http://localhost:3000/orderbook/venta';
+    b.wait(function(e, b, s) {
+      b.fill('orden[volumen]', '12.345678910')
+       .fill('orden[precio]', '987654321')
+       .pressButton('Crear Orden', self.callback)
+    });
+  })
+  .then('llego mis ordenes', function(e, b, s) {
+    assert.equal(b.location.href, 'http://localhost:3000/misordenes')
+  })
+  .and('veo mi orden creada', function(e, b, s) {
+    assert.ok(buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007'));
+  })
+  .and('veo el boton para borrar orden', function(e, b, s) {
+    var orden = buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007');
+    var columnas = orden.childNodes.toArray();
+    assert.ok(columnas[11]);
+    assert.ok(columnas[11].childNodes.toArray());
+    assert.ok(columnas[11].childNodes.toArray()[0]);
+    assert.equal(columnas[11].childNodes.toArray()[0].tagName, 'A');
+  })
+  .when('borro la prueba', function(b, s) {
+    var orden = buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007');
+    var celda = orden.childNodes.toArray()[11];
+    assert.ok(celda);
+    var boton = celda.childNodes.toArray()[0];
+    b.fire('click', boton, this.callback);
+  })
+  .then('dejo de ver la prueba', function(e, b, s) {
+    console.log(buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007'));
+    assert.ok(false);
+  })
+  .and('obtengo un mensaje de confirmacion', function(e, b, s) {
+    assert.ok(false);
   })
   .complete()
   .finish(module);

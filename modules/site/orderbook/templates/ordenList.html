@@ -8,6 +8,7 @@
         <th>Precio</th>
         <th>Cantidad</th>
         <th>Total</th>
+        <th>Cancelar</th>
       </tr>
       <% for (var o in ordenes) { %>
         <tr>
@@ -16,6 +17,7 @@
           <td><%= ordenes[o].precio %></td>
           <td><%= ordenes[o].volumen %></td>
           <td><%= ordenes[o].precio * ordenes[o].volumen %></td>
+          <td><a href="/orden/cancel/<%= ordenes[o]._id.toString() %>">[X]</a></td>
         </tr>
       <% } %>
     </tbody>

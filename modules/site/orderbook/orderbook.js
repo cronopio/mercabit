@@ -252,6 +252,11 @@ function misOrdenes(req, res, template, block, next) {
       }
       calipso.theme.renderItem(req, res, template, block, { ordenes:ordenes },next);
     });
+  } else {
+    req.flash('error',req.t('Necesita estar identificado en el sistema'));
+    if(res.statusCode != 302 && !res.noRedirect) {
+      res.redirect('back');
+    }
   }
 };
 
