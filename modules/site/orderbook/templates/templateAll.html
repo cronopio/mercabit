@@ -1,9 +1,7 @@
 <div id="orderbook-module">
   <h2><%= t('Balance') %></h2>
-  <% if(user.anonymous) { %>
-  <p>Debe estar <a href="/login">identificado</a> para ver tu balance.</p>
-  <% } else { %>
-  <p>Pesos Colombianos: <%= balance.cop %></p>
-  <p>Bitcoins: <%= balance.btc %></p>
+  <% if(balance) { %>
+  <p>Pesos Colombianos: <span id="user-balance-cop"><%= balance.cop %></span></p>
+  <p>Bitcoins: <span id="user-balance-btc"><%= balance.btc %></span></p>
   <% } %>
 </div>

@@ -155,7 +155,20 @@ function orderBook(req, res, template, block, next) {
  * Funcion para mostrar el formulario de creacion de orden de compra.
  */
 function ordenForm(req, res, template, block, next) {
+  var User = calipso.lib.mongoose.model('User');
   if (req.session && req.session.user) {
+    
+    // En caso de no tener saldo evitamos mostrar el form
+    User.findOne({username:req.session.user.username}, function(err, user) {
+      var u = user.toObject();
+      if (u.balanceCop === 0 && u.balanceBtc === 0) {
+        req.flash('error', req.t('Necesita tener saldo para crear ordenes'));
+        if(res.statusCode != 302 && !res.noRedirect) {
+          res.redirect('back');
+        }
+      }
+    });
+    
     var tipo = req.moduleParams.tipo;
     var orderForm = {
       id:'FORM-Orden', title:req.t('Crear Nueva Orden'), type:'form', method:'POST', action:'/orderbook/' + tipo,

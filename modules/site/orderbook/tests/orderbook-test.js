@@ -33,6 +33,12 @@ Feature('Revicion Inicial')
   })
   .and('Veo mi balance', function(e, b, s) {
     assert.equal(b.querySelectorAll('#orderbook-module p').length, 2);
+    assert.isNumber(parseInt(b.text('#user-balance-cop')));
+    assert.isNumber(parseInt(b.text('#user-balance-btc')));
+  })
+  .and('Debo tener saldo suficiente', function(e, b, s) {
+    assert.strictEqual((b.text('#user-balance-cop') == 0) 
+      && (b.text('#user-balance-btc') == 0), false);
   })
   .complete()
   .finish(module);
