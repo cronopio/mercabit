@@ -70,6 +70,9 @@ function init(module, app, next) {
         block: 'content' 
       }, this.parallel());
       
+      // Agrego la ruta para cancelar una orden
+      module.router.addRoute('GET /orden/cancel/:id', cancelOrden, null, this.parallel());
+      
     }, function done() {
       // Creo el modelo de Orden
       var Orden = new calipso.lib.mongoose.Schema({
@@ -282,4 +285,35 @@ function clientValidator(req, res, template, block, next) {
       res.redirect('back');
     }
   }
-}
+};
+
+/*
+ * Funcion para borrar una orden
+ */
+function cancelOrden(req, res, template, block, next) {
+  var Orden = calipso.lib.mongoose.model('Orden');
+  if (req.session && req.session.user && req.session.user.id) {
+    if (req.moduleParams.id) {
+      Orden.findById(req.moduleParams.id, function(err, orden) {
+        if (orden && orden.owner === req.session.user.id) {
+          Orden.remove(orden.toObject(), function(e, c) {
+            if (e === null && c === 1) {
+              req.flash('info', req.t('Orden cancelada!'))
+              res.redirect('/misordenes');
+            }
+          });
+        } else {
+          req.flash('error',req.t('Peticion Incorrecta'));
+          if(res.statusCode != 302 && !res.noRedirect) {
+            res.redirect('back');
+          }
+        }
+      });
+    }
+  } else {
+    req.flash('error',req.t('Necesita estar identificado en el sistema'));
+    if(res.statusCode != 302 && !res.noRedirect) {
+      res.redirect('back');
+    }
+  }
+};

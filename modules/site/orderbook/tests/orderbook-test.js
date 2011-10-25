@@ -163,11 +163,12 @@ Feature('Borrar Orden').scenario('')
     b.fire('click', boton, this.callback);
   })
   .then('dejo de ver la prueba', function(e, b, s) {
-    console.log(buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007'));
-    assert.ok(false);
+    assert.isUndefined(buscarMisOrdenes(b, 'venta', '987654321', '12.34567891', '12193263121.14007'));
   })
   .and('obtengo un mensaje de confirmacion', function(e, b, s) {
-    assert.ok(false);
+    assert.equal(b.text('#messages ul.info li').trim(), 
+      'Orden cancelada!'
+    );
   })
   .complete()
   .finish(module);
