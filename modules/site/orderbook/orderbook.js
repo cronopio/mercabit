@@ -250,28 +250,73 @@ function ordenSave(req, res, template, block, next) {
     calipso.form.process(req, function(form) {
       if (form) {
         var Orden = calipso.lib.mongoose.model('Orden'),
-            uOrden = new Orden(form.orden);
+            User = calipso.lib.mongoose.model('User');
         
-        uOrden.owner = req.session.user.id;
-        uOrden.tipo = req.moduleParams.tipo;
-        
-        // TODO: Agregar las emisiones de los pre eventos.
-        
-        uOrden.save(function(err) {
-          if(err) {
-            req.flash('error',req.t('No se pudo crear la orden porque: {msg}.',{msg:err.message}));
-            if(res.statusCode != 302 && !res.noRedirect) {
-              res.redirect('back');
-            }
-          } else {
-            // TODO: Agregar las emisiones a los post eventos.
-            // TODO: como un post evento debe estar la revision por una orden que llene esta
-            if(!res.noRedirect) {
-              req.flash('info',req.t('Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'));
-              res.redirect('/misordenes');
-            }
+        calipso.lib.step(
+          function checkBalance() {
+            var self = this;
+            User.findById(req.session.user.id, function(err, user) {
+              var u = user.toObject();
+              if(err) {
+                req.flash('error',req.t('No se pudo crear la orden porque: {msg}.',{msg:err.message}));
+                if(res.statusCode != 302 && !res.noRedirect) {
+                  res.redirect('back');
+                }
+              } else {
+                if (req.moduleParams.tipo === 'compra') {
+                  var total = parseFloat(form.orden.volumen) * parseInt(form.orden.precio);
+                  if (u.balanceCop < total) {
+                    req.flash('error',req.t('No tiene Pesos suficientes para esta orden'));
+                    if(res.statusCode != 302 && !res.noRedirect) {
+                      res.redirect('back');
+                    }
+                  } else {
+                    self('ok');
+                  }
+                }
+                
+                if (req.moduleParams.tipo === 'venta') {
+                  if (u.balanceBtc < parseFloat(form.orden.volumen)) {
+                    req.flash('error',req.t('No tiene Bitcoins suficientes para esta orden'));
+                    if(res.statusCode != 302 && !res.noRedirect) {
+                      res.redirect('back');
+                    }
+                  } else {
+                    self('ok');
+                  }
+                }
+              }
+            });
+          },
+          function saveOrden(e){
+            if (e === 'ok') {
+              var uOrden = new Orden(form.orden);
+              uOrden.owner = req.session.user.id;
+              uOrden.tipo = req.moduleParams.tipo;
+              
+              // TODO: Agregar las emisiones de los pre eventos.
+              
+              uOrden.save(function(err) {
+                if(err) {
+                  req.flash('error',req.t('No se pudo crear la orden porque: {msg}.',{msg:err.message}));
+                  if(res.statusCode != 302 && !res.noRedirect) {
+                    res.redirect('back');
+                  }
+                } else {
+                  // TODO: Agregar las emisiones a los post eventos.
+                  // TODO: como un post evento debe estar la revision por una orden que llene esta
+                  if(!res.noRedirect) {
+                    req.flash('info',req.t('Orden creada!, tu orden sera cerrada cuando se encuentre una orden que la llene.'));
+                    res.redirect('/misordenes');
+                  }
+                }
+              });
+            };
+          },
+          function checkTrade(){
+            
           }
-        });
+        );
       }
     });
   } else {
