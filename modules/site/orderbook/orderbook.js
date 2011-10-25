@@ -130,11 +130,56 @@ function allPages(req, res, template, block, next) {
 function orderBook(req, res, template, block, next) {
   var Orden = calipso.lib.mongoose.model('Orden'),
       format = req.moduleParams.format ? req.moduleParams.format : 'html';
+      
+  var comparoOrdenes = function(a, b) {
+    return b.precio - a.precio;
+  };
+  
+  var reducirOrdenes = function(tipo, total, fn) {
+    var ordenes = [], compilado = {};
+    
+    for (var c in total) {
+      if (compilado[total[c].precio]) {
+        compilado[total[c].precio].push(total[c]);
+      } else {
+        compilado[total[c].precio] = [total[c]];
+      }
+    }
+    
+    for (var precio in compilado) {
+      if (compilado[precio].length > 1){
+        // Sumamos Volumenes
+        var orden = {
+          tipo: tipo,
+          precio: precio,
+          volumen: 0
+        };
+        for (p in compilado[precio]) {
+          orden.volumen += parseFloat(compilado[precio][p].volumen);
+        }
+        ordenes.push(orden);
+      } else {
+        ordenes.push(compilado[precio][0]);
+      }
+    }
+    
+    ordenes.sort(comparoOrdenes);
+    
+    if (tipo === 'venta') ordenes.reverse();
+    
+    fn(null, ordenes);
+    
+    
+  };
   
   calipso.lib.step(
     function getOrdenes() {
-      Orden.find({tipo:'compra'}).desc('precio').exec(this.parallel());
-      Orden.find({tipo:'venta'}).asc('precio').exec(this.parallel());
+      Orden.find({tipo:'compra'}, this.parallel());
+      Orden.find({tipo:'venta'}, this.parallel());
+    }, 
+    function reduzcoOrdenes(err, compras_total, ventas_total) {
+      reducirOrdenes('compra', compras_total, this.parallel());
+      reducirOrdenes('venta', ventas_total, this.parallel());
     },
     function done(err, compras, ventas) {
       if (format === 'html') {
@@ -142,14 +187,12 @@ function orderBook(req, res, template, block, next) {
           compras:compras,
           ventas:ventas
         },next);
-      }
-      
+      }     
       if (format === "json") {
         res.format = format;
         res.send({compras:compras,ventas:ventas});
         next();
       }
-      
     }
   );
 };
