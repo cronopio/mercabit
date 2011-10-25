@@ -4,16 +4,21 @@
     $(document).ready(function() {
       $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('required');
       $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('number');
+      $('input[name="orden[volumen]"]').attr('min', 0.1);
+      $('input[name="orden[precio]"]').attr('min', 50).addClass('digits');
       
       $('#FORM-Orden').validate({
         messages: {
           "orden[volumen]": {
             number: 'Por favor ingrese una cantidad válida',
-            required: 'La cantidad es necesaria'
+            required: 'La cantidad es necesaria',
+            min: 'La cantidad minima de una orden es de 0.1 BTC'
           },
           "orden[precio]": {
             numbre: 'Por favor ingrese un precio válido',
-            required: 'El precio es necesario'
+            required: 'El precio es necesario',
+            min: 'El precio minimo es de COP$100',
+            digits: 'No utilice ni puntos ni comas por favor.'
           }
         },
         highlight: function(el, eClass, vClass) {

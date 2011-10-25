@@ -130,8 +130,8 @@ function orderBook(req, res, template, block, next) {
   
   calipso.lib.step(
     function getOrdenes() {
-      Orden.find({tipo:'compra'}, this.parallel());
-      Orden.find({tipo:'venta'}, this.parallel());
+      Orden.find({tipo:'compra'}).desc('precio').exec(this.parallel());
+      Orden.find({tipo:'venta'}).asc('precio').exec(this.parallel());
     },
     function done(err, compras, ventas) {
       if (format === 'html') {
