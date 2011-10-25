@@ -6,17 +6,20 @@ var Feature = require('vows-bdd').Feature,
     assert = require('assert'),
     zombie = require('zombie');
     
+var loguear = function(f) {
+  zombie.visit('http://localhost:3000/', function(e, b, s) {
+    b.clickLink('Log In', function(e, b, s) {
+      b.fill("user[username]", "probando")
+        .fill("user[password]", "probando")
+        .pressButton("Login", f.callback);
+    });
+  });
+};
+    
 Feature('Revicion Inicial')
   .scenario('Index')
   .given('Logueado', function() {
-    var self = this;
-    zombie.visit('http://localhost:3000/', function(e, b, s) {
-      b.clickLink('Log In', function(e, b, s) {
-        b.fill("user[username]", "probando")
-          .fill("user[password]", "probando")
-          .pressButton("Login", self.callback);
-      });
-    });
+    loguear(this);
   })
   .when('En el Home', function(b, s) {
     b.location = 'http://localhost:3000/';
@@ -46,14 +49,7 @@ Feature('Revicion Inicial')
 Feature('Orden de Compra')
   .scenario('')
   .given('Logueado', function() {
-    var self = this;
-    zombie.visit('http://localhost:3000/', function(e, b, s) {
-      b.clickLink('Log In', function(e, b, s) {
-        b.fill("user[username]", "probando")
-          .fill("user[password]", "probando")
-          .pressButton("Login", self.callback);
-      });
-    });
+    loguear(this);
   })
   .when('form de creacion', function(b, s) {
     b.location = 'http://localhost:3000/orderbook/compra';
@@ -86,14 +82,7 @@ Feature('Orden de Compra')
 
 Feature('Orden de Venta').scenario('')
   .given('Logueado', function() {
-    var self = this;
-    zombie.visit('http://localhost:3000/', function(e, b, s) {
-      b.clickLink('Log In', function(e, b, s) {
-        b.fill("user[username]", "probando")
-          .fill("user[password]", "probando")
-          .pressButton("Login", self.callback);
-      });
-    });
+    loguear(this);
   })
   .when('form de creacion', function(b, s) {
     b.location = 'http://localhost:3000/orderbook/venta';
