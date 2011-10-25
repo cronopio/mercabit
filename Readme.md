@@ -8,6 +8,8 @@ Probando por ahora calip.so
 
 El order book es el registro completo de todas las ordenes de compra y venta, de todos los usuarios.
 
+El order book es desarrollado como un modulo de calip.so puede el codigo fuente en el branch orderbook en el archivo `modules/site/orderbook`
+
 ### Orden
 
 Una orden tiene los siguientes atributos
