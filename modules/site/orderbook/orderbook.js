@@ -175,6 +175,11 @@ function ordenForm(req, res, template, block, next) {
     calipso.form.render(orderForm, null, req, function(form) {
       calipso.theme.renderItem(req, res, form, block, {}, next);
     });
+  } else {
+    req.flash('error',req.t('Necesita estar identificado en el sistema'));
+    if(res.statusCode != 302 && !res.noRedirect) {
+      res.redirect('back');
+    }
   }
 };
 
@@ -210,6 +215,11 @@ function ordenSave(req, res, template, block, next) {
         });
       }
     });
+  } else {
+    req.flash('error',req.t('Necesita estar identificado en el sistema'));
+    if(res.statusCode != 302 && !res.noRedirect) {
+      res.redirect('back');
+    }
   }
 };
 
@@ -238,14 +248,20 @@ function misOrdenes(req, res, template, block, next) {
  */
 function clientValidator(req, res, template, block, next) {
   var User = calipso.lib.mongoose.model('User');
-  
-  User.findOne({username:req.session.user.username}, function(err, user) {
-    var u = user.toObject();
-    calipso.theme.renderItem(req, res, template, block, {
-      balance: {
-        cop: u.balanceCop,
-        btc: u.balanceBtc
-      }
-    }, next);
-  });
+  if (req.session && req.session.user && req.session.user.username) {
+    User.findOne({username:req.session.user.username}, function(err, user) {
+      var u = user.toObject();
+      calipso.theme.renderItem(req, res, template, block, {
+        balance: {
+          cop: u.balanceCop,
+          btc: u.balanceBtc
+        }
+      }, next);
+    });
+  } else {
+    req.flash('error',req.t('Necesita estar identificado en el sistema'));
+    if(res.statusCode != 302 && !res.noRedirect) {
+      res.redirect('back');
+    }
+  }
 }
