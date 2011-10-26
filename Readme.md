@@ -29,3 +29,7 @@ y por el mismo precio sea creada.
 ### Negocio
 Es cuando alguna de las ordenes creadas por algun usuario es cerrada por haberse creado o encontrado una orden contrario por el mismo precio. 
 En este momento se debe anunciar a ambas partes del negocio cerrado.
+
+
+#### Desarrollo
+Por el momento se esta creando un modulo para calip.so que defina el trabajo del orderbook, si desea mirar el modulo, seleccione el Branch `orderbook` y revise el directorio `modules/site/orderbook`
