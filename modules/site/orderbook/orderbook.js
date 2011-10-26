@@ -254,6 +254,19 @@ function ordenSave(req, res, template, block, next) {
             User = calipso.lib.mongoose.model('User');
         
         calipso.lib.step(
+          function checkInputs() {
+            var cant = parseFloat(form.orden.volumen),
+                precio = parseInt(form.orden.precio);
+                
+            if (cant > 0 && precio > 0){
+              this();
+            } else {
+              req.flash('error',req.t('No se pudo crear la orden.'));
+              if(res.statusCode != 302 && !res.noRedirect) {
+                res.redirect('back');
+              }
+            }
+          },
           function checkBalance() {
             var self = this;
             User.findById(req.session.user.id, function(err, user) {

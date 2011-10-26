@@ -15,6 +15,7 @@
       <% } %>
       
       <% if (tipo === 'compra') { %>
+        volumen.attr('min', 0.1);
         total.attr('max', <%= balance.cop %>)
       <% } %>
       
