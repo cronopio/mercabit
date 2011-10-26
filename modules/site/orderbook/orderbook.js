@@ -222,8 +222,9 @@ function ordenForm(req, res, template, block, next) {
         id:'form-section-core',
         label:tipo,
         fields: [
-          {label:'Cantidad', name:'orden[volumen]', type:'text', class:'required number'},
-          {label:'Precio', name:'orden[precio]', type:'text', class:'required number'}
+          {label:'Cantidad', name:'orden[volumen]', type:'text'},
+          {label:'Precio', name:'orden[precio]', type:'text'},
+          {label:'Total', name:'orden[total]', type:'text'}
         ]
       }],
       buttons: [
@@ -364,7 +365,8 @@ function clientValidator(req, res, template, block, next) {
         balance: {
           cop: u.balanceCop,
           btc: u.balanceBtc
-        }
+        },
+        tipo: req.moduleParams.tipo
       }, next);
     });
   } else {

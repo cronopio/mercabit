@@ -2,23 +2,38 @@
   <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
-      $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('required');
-      $('input[name="orden[volumen]"], input[name="orden[precio]"]').addClass('number');
-      $('input[name="orden[volumen]"]').attr('min', 0.1);
-      $('input[name="orden[precio]"]').attr('min', 50).addClass('digits');
+      var volumen = $('input[name="orden[volumen]"]'),
+          precio = $('input[name="orden[precio]"]'),
+          total = $('input[name="orden[total]"]'),
+          ambos = $('input[name="orden[volumen]"], input[name="orden[precio]"]');
+          
+      ambos.addClass('required').addClass('number');
+      precio.attr('min', 50).addClass('digits');
+      
+      <% if (tipo === 'venta') { %>
+         volumen.attr('min', 0.1).attr('max', <%= balance.btc %>);
+      <% } %>
+      
+      <% if (tipo === 'compra') { %>
+        total.attr('max', <%= balance.cop %>)
+      <% } %>
       
       $('#FORM-Orden').validate({
         messages: {
           "orden[volumen]": {
             number: 'Por favor ingrese una cantidad válida',
             required: 'La cantidad es necesaria',
-            min: 'La cantidad minima de una orden es de 0.1 BTC'
+            min: 'La cantidad minima de una orden es de 0.1 BTC',
+            max: 'Esa cantidad sobrepasa su saldo'
           },
           "orden[precio]": {
-            numbre: 'Por favor ingrese un precio válido',
+            number: 'Por favor ingrese un precio válido',
             required: 'El precio es necesario',
             min: 'El precio minimo es de COP$100',
             digits: 'No utilice ni puntos ni comas por favor.'
+          },
+          "orden[total]": {
+            max: 'No tiene saldo suficiente para cubrir la orden'
           }
         },
         highlight: function(el, eClass, vClass) {
@@ -26,7 +41,13 @@
           // el highlight del input.
         }
       });
+      
+      // Configuro el input para ver el total
+      total.attr('readonly', true);
+      ambos.keyup(function() {
+        total.val(parseInt(precio.val()) * parseFloat(volumen.val()));
+      });
+      
     });
-    
   </script>
 <% } %>
